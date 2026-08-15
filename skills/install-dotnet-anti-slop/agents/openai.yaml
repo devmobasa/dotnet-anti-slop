@@ -1,0 +1,4 @@
+interface:
+  display_name: "Install .NET Anti-Slop"
+  short_description: "Install semantic .NET policy into a repository"
+  default_prompt: "Use $install-dotnet-anti-slop to add the analyzer policy to this .NET repository."

@@ -1,0 +1,35 @@
+using System.Text;
+
+public async Task<string> FormatAsync(
+    IReadOnlyCollection<int> values,
+    CancellationToken cancellationToken)
+{
+    var builder = new StringBuilder(values.Count * 4);
+    foreach (var value in values)
+    {
+        builder.Append(value);
+    }
+
+    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+    return builder.ToString();
+}
+
+public async Task LoadAllAsync(
+    IEnumerable<int> ids,
+    CancellationToken cancellationToken)
+{
+    await Parallel.ForEachAsync(
+        ids,
+        new ParallelOptions
+        {
+            MaxDegreeOfParallelism = 16,
+            CancellationToken = cancellationToken
+        },
+        async (id, ct) => await LoadAsync(id, ct));
+}
+
+public TaskCompletionSource<int> CreateSignal() =>
+    new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+public Func<Task> CreateCallback() =>
+    async () => await RefreshCoreAsync();

@@ -1,0 +1,13 @@
+# Start with a narrow directory exception and remove it project by project.
+[legacy/**/*.cs]
+dotnet_diagnostic.DAS1008.severity = suggestion
+dotnet_diagnostic.DAS1009.severity = none
+dotnet_diagnostic.DAS3008.severity = suggestion
+
+# Never baseline unsafe SQL or invalid lifetime/task ownership.
+dotnet_diagnostic.DAS2001.severity = error
+dotnet_diagnostic.DAS2002.severity = error
+dotnet_diagnostic.DAS2003.severity = error
+dotnet_diagnostic.DAS2007.severity = error
+dotnet_diagnostic.DAS3007.severity = error
+dotnet_diagnostic.DAS3010.severity = error

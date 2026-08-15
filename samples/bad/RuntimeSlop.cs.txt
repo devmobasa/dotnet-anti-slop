@@ -1,0 +1,30 @@
+using System.Collections;
+using System.Text;
+
+public async void RefreshAsync(IEnumerable<int> values)
+{
+    var text = "";
+    var boxes = new ArrayList();
+
+    foreach (var value in values)
+    {
+        text += value;         // DAS1006
+        boxes.Add(value);      // DAS1010
+    }
+
+    Thread.Sleep(100);         // DAS1002
+    var response = FetchAsync().Result; // DAS1001
+}
+
+public async Task LoadAllAsync(
+    IEnumerable<int> ids,
+    CancellationToken cancellationToken)
+{
+    await Task.WhenAll(ids.Select(LoadAsync)); // DAS1012
+}
+
+public TaskCompletionSource<int> CreateSignal() =>
+    new(); // DAS1013
+
+public Action CreateCallback() =>
+    async () => await RefreshCoreAsync(); // DAS1014

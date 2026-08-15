@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>DotNetAntiSlop.Analyzers</AssemblyName>
+    <RootNamespace>DotNetAntiSlop.Analyzers</RootNamespace>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <IsDotNetAntiSlopAnalyzerProject>true</IsDotNetAntiSlopAnalyzerProject>
+    <!-- Directory.Packages.props is imported after Directory.Build.props. Keep
+         vendored analyzer dependencies independent of consumer CPM here. -->
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <PackageId>DotNetAntiSlop.Analyzers</PackageId>
+    <Title>DotNet Anti-Slop Analyzers</Title>
+    <Version>0.1.0-preview.1</Version>
+    <Authors>dotnet-anti-slop contributors</Authors>
+    <Description>Semantic anti-slop analyzers and policy profiles for C#, .NET, ASP.NET Core, and EF Core.</Description>
+    <PackageTags>roslyn;analyzer;csharp;dotnet;aspnetcore;efcore;performance</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/devmobasa/dotnet-anti-slop</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/devmobasa/dotnet-anti-slop</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DotNetAntiSlop.Analyzers.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+    <None Include="../../config/profiles/*.globalconfig" Pack="true" PackagePath="buildTransitive/config/" />
+    <None Include="buildTransitive/DotNetAntiSlop.Analyzers.props" Pack="true" PackagePath="buildTransitive/" />
+    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+</Project>

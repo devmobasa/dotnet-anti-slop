@@ -1,0 +1,38 @@
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<AppDbContext>(); // DAS2002
+var nested = builder.Services.BuildServiceProvider(); // DAS2001
+
+var app = builder.Build();
+
+app.UseDeveloperExceptionPage(); // DAS2006
+app.UseSwaggerUI();              // DAS2006
+
+app.MapGet("/orders", async (AppDbContext db) =>
+{
+    _ = AuditAsync(); // DAS2007
+
+    // DAS3001, DAS3003, DAS3008
+    return await db.Orders.ToListAsync();
+});
+
+app.MapGet("/find", async (
+    string name,
+    AppDbContext db,
+    CancellationToken ct) =>
+{
+    // DAS3007
+    return await db.Orders
+        .FromSqlRaw($"SELECT * FROM Orders WHERE Name = '{name}'")
+        .ToListAsync(ct);
+});
+
+sealed class CachedRequestContext
+{
+    private readonly HttpContext? context;
+
+    public CachedRequestContext(IHttpContextAccessor accessor)
+    {
+        context = accessor.HttpContext; // DAS2008
+    }
+}

@@ -1,0 +1,4 @@
+<Project>
+  <!-- Deliberately shadows a consumer repository's Directory.Build.targets
+       when this project is installed in vendored mode. -->
+</Project>

@@ -1,0 +1,66 @@
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("App")));
+builder.Services.AddHttpClient<InventoryClient>();
+builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+builder.Services.AddHostedService<QueuedWorker>();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.MapGet("/orders", async (
+    int? afterId,
+    AppDbContext db,
+    CancellationToken cancellationToken) =>
+{
+    var query = db.Orders
+        .AsNoTracking()
+        .OrderBy(order => order.Id);
+
+    if (afterId is { } cursor)
+    {
+        query = query
+            .Where(order => order.Id > cursor)
+            .OrderBy(order => order.Id);
+    }
+
+    return await query
+        .Take(100)
+        .Select(order => new OrderSummary(
+            order.Id,
+            order.Number,
+            order.Total))
+        .ToListAsync(cancellationToken);
+});
+
+app.MapGet("/find", async (
+    string name,
+    AppDbContext db,
+    CancellationToken cancellationToken) =>
+    await db.Orders
+        .FromSqlInterpolated(
+            $"SELECT * FROM Orders WHERE Name = {name}")
+        .AsNoTracking()
+        .Take(100)
+        .ToListAsync(cancellationToken));
+
+sealed class CurrentRequestContext
+{
+    private readonly IHttpContextAccessor accessor;
+
+    public CurrentRequestContext(IHttpContextAccessor accessor)
+    {
+        this.accessor = accessor;
+    }
+
+    public CancellationToken RequestAborted =>
+        accessor.HttpContext?.RequestAborted ?? default;
+}

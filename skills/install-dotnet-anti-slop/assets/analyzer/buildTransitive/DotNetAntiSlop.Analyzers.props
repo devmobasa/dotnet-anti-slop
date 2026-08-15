@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <DotNetAntiSlopProfile Condition="'$(DotNetAntiSlopProfile)' == ''">default</DotNetAntiSlopProfile>
+  </PropertyGroup>
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)config\$(DotNetAntiSlopProfile).globalconfig')">
+    <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)config\$(DotNetAntiSlopProfile).globalconfig" />
+  </ItemGroup>
+</Project>

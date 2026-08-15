@@ -1,0 +1,76 @@
+is_global = true
+global_level = 100
+
+# dotnet-anti-slop profile: strict
+# Generated from rules/rules.json. Project-level .editorconfig entries can override it.
+
+dotnet_diagnostic.DAS1001.severity = warning
+dotnet_diagnostic.DAS1002.severity = warning
+dotnet_diagnostic.DAS1003.severity = error
+dotnet_diagnostic.DAS1004.severity = warning
+dotnet_diagnostic.DAS1005.severity = warning
+dotnet_diagnostic.DAS1006.severity = warning
+dotnet_diagnostic.DAS1007.severity = warning
+dotnet_diagnostic.DAS1008.severity = warning
+dotnet_diagnostic.DAS1009.severity = warning
+dotnet_diagnostic.DAS1010.severity = warning
+dotnet_diagnostic.DAS1011.severity = error
+dotnet_diagnostic.DAS1012.severity = warning
+dotnet_diagnostic.DAS1013.severity = warning
+dotnet_diagnostic.DAS1014.severity = error
+dotnet_diagnostic.DAS2001.severity = error
+dotnet_diagnostic.DAS2002.severity = error
+dotnet_diagnostic.DAS2003.severity = error
+dotnet_diagnostic.DAS2004.severity = warning
+dotnet_diagnostic.DAS2005.severity = warning
+dotnet_diagnostic.DAS2006.severity = warning
+dotnet_diagnostic.DAS2007.severity = error
+dotnet_diagnostic.DAS2008.severity = warning
+dotnet_diagnostic.DAS3001.severity = warning
+dotnet_diagnostic.DAS3002.severity = warning
+dotnet_diagnostic.DAS3003.severity = warning
+dotnet_diagnostic.DAS3004.severity = warning
+dotnet_diagnostic.DAS3005.severity = warning
+dotnet_diagnostic.DAS3006.severity = warning
+dotnet_diagnostic.DAS3007.severity = error
+dotnet_diagnostic.DAS3008.severity = warning
+dotnet_diagnostic.DAS3009.severity = warning
+dotnet_diagnostic.DAS3010.severity = error
+dotnet_diagnostic.DAS4001.severity = error
+
+# SDK/compiler diagnostics that complement rather than duplicate DAS rules.
+dotnet_diagnostic.CA1062.severity = warning
+dotnet_diagnostic.CA1816.severity = warning
+dotnet_diagnostic.CA1845.severity = suggestion
+dotnet_diagnostic.CA1846.severity = suggestion
+dotnet_diagnostic.CA1848.severity = suggestion
+dotnet_diagnostic.CA1852.severity = suggestion
+dotnet_diagnostic.CA1861.severity = suggestion
+dotnet_diagnostic.CA1873.severity = warning
+dotnet_diagnostic.CA2000.severity = warning
+dotnet_diagnostic.CA2008.severity = warning
+dotnet_diagnostic.CA2201.severity = warning
+dotnet_diagnostic.CA2213.severity = warning
+dotnet_diagnostic.CA2254.severity = warning
+dotnet_diagnostic.CA2263.severity = suggestion
+dotnet_diagnostic.ASP0019.severity = warning
+dotnet_diagnostic.ASP0022.severity = warning
+dotnet_diagnostic.ASP0023.severity = warning
+
+# DAS2001 is broader and semantic; do not emit the narrower duplicate.
+dotnet_diagnostic.ASP0000.severity = none
+
+# The custom rules own these findings to keep one message and one suppression point.
+dotnet_diagnostic.CA1827.severity = none
+dotnet_diagnostic.CA1828.severity = none
+dotnet_diagnostic.CA1851.severity = none
+dotnet_diagnostic.CA2012.severity = none
+dotnet_diagnostic.CA2016.severity = none
+dotnet_diagnostic.CA2247.severity = none
+
+# Strict profile also elevates selected SDK performance diagnostics.
+dotnet_diagnostic.CA1845.severity = warning
+dotnet_diagnostic.CA1846.severity = warning
+dotnet_diagnostic.CA1848.severity = warning
+dotnet_diagnostic.CA1852.severity = warning
+dotnet_diagnostic.CA1861.severity = warning

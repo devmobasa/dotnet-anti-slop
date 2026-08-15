@@ -1,0 +1,12 @@
+---
+description: Enforce C#, .NET, ASP.NET Core, and EF Core anti-slop policy
+globs:
+  - "**/*.cs"
+  - "**/*.csproj"
+alwaysApply: true
+---
+
+Read and follow `AGENTS.md`. Use `docs/best-practices.md` for review-only
+choices and `docs/rules/index.md` for diagnostic boundaries. Generated code
+must not introduce sync-over-async, dropped cancellation, invalid DI lifetimes,
+unbounded request queries, dynamic raw SQL, N+1 loops, or read-only tracking.

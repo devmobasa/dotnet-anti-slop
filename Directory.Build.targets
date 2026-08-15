@@ -1,0 +1,4 @@
+<Project>
+  <!-- This file is intentionally small. Consumer installation uses an isolated
+       .dotnet-anti-slop/DotNetAntiSlop.targets import instead of editing projects. -->
+</Project>

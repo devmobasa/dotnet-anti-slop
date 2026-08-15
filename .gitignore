@@ -1,0 +1,13 @@
+bin/
+obj/
+artifacts/
+TestResults/
+*.user
+*.suo
+*.nupkg
+*.snupkg
+.vs/
+.idea/
+.DS_Store
+.dotnet/
+coverage/

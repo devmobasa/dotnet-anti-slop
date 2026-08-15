@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/DotNetAntiSlop.Analyzers/DotNetAntiSlop.Analyzers.csproj" />
+  <Project Path="tests/DotNetAntiSlop.Analyzers.Tests/DotNetAntiSlop.Analyzers.Tests.csproj" />
+</Solution>
