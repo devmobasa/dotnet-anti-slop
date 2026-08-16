@@ -3,7 +3,7 @@ set -euo pipefail
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 root=$(CDPATH= cd -- "$script_dir/.." && pwd -P)
-expected_rule_count=33
+expected_rule_count=36
 begin_marker='<!-- dotnet-anti-slop:begin -->'
 
 fail() {

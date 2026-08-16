@@ -692,4 +692,173 @@ public sealed class RuntimeAnalyzerTests
                 }
             }
             """);
+
+    [Fact]
+    public Task Reports_empty_untyped_catch() =>
+        AnalyzerTestHost.AssertHasDiagnosticAsync(
+            "DAS1015",
+            """
+            sealed class Sample
+            {
+                void Run()
+                {
+                    try { Throw(); }
+                    catch { }
+                }
+
+                void Throw() { }
+            }
+            """);
+
+    [Fact]
+    public Task Reports_empty_SystemException_catch_even_with_comment() =>
+        AnalyzerTestHost.AssertHasDiagnosticAsync(
+            "DAS1015",
+            """
+            using System;
+            sealed class Sample
+            {
+                void Run()
+                {
+                    try { Throw(); }
+                    catch (Exception)
+                    {
+                        // Intentionally ignored.
+                    }
+                }
+
+                void Throw() { }
+            }
+            """);
+
+    [Fact]
+    public Task Reports_empty_specific_exception_catch_without_justification() =>
+        AnalyzerTestHost.AssertHasDiagnosticAsync(
+            "DAS1015",
+            """
+            using System;
+            sealed class Sample
+            {
+                void Run()
+                {
+                    try { Throw(); }
+                    catch (OperationCanceledException) { }
+                }
+
+                void Throw() { }
+            }
+            """);
+
+    [Fact]
+    public Task Does_not_treat_comment_before_catch_block_as_justification() =>
+        AnalyzerTestHost.AssertHasDiagnosticAsync(
+            "DAS1015",
+            """
+            using System;
+            sealed class Sample
+            {
+                void Run()
+                {
+                    try { Throw(); }
+                    // Cancellation is expected.
+                    catch (OperationCanceledException) { }
+                }
+
+                void Throw() { }
+            }
+            """);
+
+    [Fact]
+    public Task Does_not_treat_an_empty_comment_as_justification() =>
+        AnalyzerTestHost.AssertHasDiagnosticAsync(
+            "DAS1015",
+            """
+            using System;
+            sealed class Sample
+            {
+                void Run()
+                {
+                    try { Throw(); }
+                    catch (OperationCanceledException) { /* */ }
+                }
+
+                void Throw() { }
+            }
+            """);
+
+    [Fact]
+    public Task Allows_documented_specific_exception_swallow() =>
+        AnalyzerTestHost.AssertNoDiagnosticAsync(
+            "DAS1015",
+            """
+            using System;
+            sealed class Sample
+            {
+                void Run()
+                {
+                    try { Throw(); }
+                    catch (OperationCanceledException)
+                    {
+                        // Cancellation is expected after the caller disconnects.
+                    }
+                }
+
+                void Throw() { }
+            }
+            """);
+
+    [Fact]
+    public Task Allows_documented_specific_exception_with_block_comment() =>
+        AnalyzerTestHost.AssertNoDiagnosticAsync(
+            "DAS1015",
+            """
+            using System;
+            sealed class Sample
+            {
+                void Run()
+                {
+                    try { Throw(); }
+                    catch (OperationCanceledException) { /* Expected during shutdown. */ }
+                }
+
+                void Throw() { }
+            }
+            """);
+
+    [Fact]
+    public Task Allows_catch_with_a_handling_statement() =>
+        AnalyzerTestHost.AssertNoDiagnosticAsync(
+            "DAS1015",
+            """
+            using System;
+            sealed class Sample
+            {
+                void Run()
+                {
+                    try { Throw(); }
+                    catch (Exception exception) { Log(exception); }
+                }
+
+                void Throw() { }
+                void Log(Exception exception) { }
+            }
+            """);
+
+    [Fact]
+    public Task Allows_catch_that_rethrows() =>
+        AnalyzerTestHost.AssertNoDiagnosticAsync(
+            "DAS1015",
+            """
+            using System;
+            sealed class Sample
+            {
+                void Run()
+                {
+                    try { Throw(); }
+                    catch (Exception) { throw; }
+                }
+
+                void Throw() { }
+            }
+            """);
 }

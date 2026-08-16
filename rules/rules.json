@@ -182,6 +182,18 @@
       "confidence": "high"
     },
     {
+      "id": "DAS1015",
+      "category": "Reliability",
+      "title": "Do not silently swallow exceptions",
+      "severity": "warning",
+      "summary": "Handle, propagate, or document the intentional swallowing of a specific exception.",
+      "rationale": "An empty catch can hide failed work and corrupt control flow without leaving evidence for callers or operators.",
+      "bad": "try { Save(); } catch { }",
+      "good": "try { Save(); } catch (OperationCanceledException) { /* Expected after caller cancellation. */ }",
+      "analyzer": "runtime",
+      "confidence": "high"
+    },
+    {
       "id": "DAS2001",
       "category": "ASP.NET Core",
       "title": "Do not build a nested service provider",
@@ -274,6 +286,30 @@
       "rationale": "A captured HttpContext can be null during construction or refer to a request that is no longer current when the stored value is read.",
       "bad": "public Handler(IHttpContextAccessor accessor) => _context = accessor.HttpContext;",
       "good": "public Handler(IHttpContextAccessor accessor) => _accessor = accessor;",
+      "analyzer": "aspnet",
+      "confidence": "high"
+    },
+    {
+      "id": "DAS2009",
+      "category": "Configuration",
+      "title": "Validate bound options at startup",
+      "severity": "warning",
+      "summary": "Call ValidateOnStart after binding options so invalid configuration fails during startup.",
+      "rationale": "Deferred options validation lets invalid configuration survive deployment and fail only when the affected feature is first used.",
+      "bad": "services.AddOptions<MailOptions>().BindConfiguration(\"Mail\");",
+      "good": "services.AddOptions<MailOptions>().BindConfiguration(\"Mail\").ValidateOnStart();",
+      "analyzer": "aspnet",
+      "confidence": "medium"
+    },
+    {
+      "id": "DAS2010",
+      "category": "Blazor",
+      "title": "Observe EventCallback.InvokeAsync tasks",
+      "severity": "warning",
+      "summary": "Await, return, or otherwise observe the Task returned by EventCallback.InvokeAsync.",
+      "rationale": "Dropping an EventCallback task hides callback failures and allows the initiating component to continue before the parent callback completes.",
+      "bad": "Changed.InvokeAsync(value);",
+      "good": "await Changed.InvokeAsync(value);",
       "analyzer": "aspnet",
       "confidence": "high"
     },

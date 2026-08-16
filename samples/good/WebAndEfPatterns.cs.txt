@@ -1,5 +1,12 @@
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddOptions<MailOptions>()
+    .BindConfiguration("Mail")
+    .ValidateOnStart();
+
+async Task NotifyChangedAsync(EventCallback<int> changed) =>
+    await changed.InvokeAsync(42);
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("App")));

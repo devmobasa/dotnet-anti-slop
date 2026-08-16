@@ -15,16 +15,27 @@ public sealed class RuleInventoryTests
             .OrderBy(id => id, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(33, ids.Length);
+        Assert.Equal(36, ids.Length);
         Assert.Equal(ids.Length, ids.Distinct(StringComparer.Ordinal).Count());
 
-        var implemented = AnalyzerTestHost.AllAnalyzers
+        var supportedIds = AnalyzerTestHost.AllAnalyzers
             .SelectMany(analyzer => analyzer.SupportedDiagnostics)
             .Select(descriptor => descriptor.Id)
+            .ToArray();
+        var implemented = supportedIds
+            .Distinct(StringComparer.Ordinal)
             .OrderBy(id => id, StringComparer.Ordinal)
             .ToArray();
 
         Assert.Equal(ids, implemented);
+
+        var duplicateImplementations = supportedIds
+            .GroupBy(id => id, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .ToArray();
+        var razorRule = Assert.Single(duplicateImplementations);
+        Assert.Equal(DiagnosticIds.DAS2010, razorRule.Key);
+        Assert.Equal(2, razorRule.Count());
 
         Assert.All(
             AnalyzerTestHost.AllAnalyzers.SelectMany(analyzer => analyzer.SupportedDiagnostics),

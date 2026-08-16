@@ -73,11 +73,14 @@ EOF
 </Project>
 EOF
   cat >"$consumer/Consumer.csproj" <<'EOF'
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>
 EOF
 }
@@ -186,6 +189,44 @@ public static class Consumer
 EOF
 run_capture false "$consumer" "$temporary_root/invalid.log" dotnet build "$project" --no-incremental -warnaserror:DAS1001
 grep -Fq DAS1001 "$temporary_root/invalid.log" || fail 'vendored analyzer did not report DAS1001'
+
+(cd "$unrelated" && "$installer" "$consumer" --profile default --force) >/dev/null
+rm -- "$consumer/Consumer.cs"
+cat >"$consumer/CallbackComponent.razor" <<'EOF'
+@using Microsoft.AspNetCore.Components
+
+@code {
+    [Parameter]
+    public EventCallback Changed { get; set; }
+
+    private void Notify()
+    {
+        Changed.InvokeAsync();
+    }
+}
+EOF
+run_capture false "$consumer" "$temporary_root/razor-callback.log" dotnet build "$project" --no-incremental -warnaserror:DAS2010
+if ! grep -Fq DAS2010 "$temporary_root/razor-callback.log"; then
+  command cat -- "$temporary_root/razor-callback.log" >&2
+  fail 'Razor vendored consumer did not report DAS2010'
+fi
+grep -Fq CallbackComponent.razor "$temporary_root/razor-callback.log" || fail 'vendored Razor diagnostic was not mapped to component source'
+
+cat >"$consumer/CallbackComponent.razor" <<'EOF'
+@using Microsoft.AspNetCore.Components
+
+@code {
+    [Parameter]
+    public EventCallback Changed { get; set; }
+
+    private async Task NotifyAsync()
+    {
+        await Changed.InvokeAsync();
+    }
+}
+EOF
+run_capture true "$consumer" "$temporary_root/valid-razor-callback.log" dotnet build "$project" --no-incremental -warnaserror:DAS2010
+assert_warning_free "$temporary_root/valid-razor-callback.log" 'valid Razor vendored consumer'
 
 verify_canonical_dirty_state "$temporary_root"
 printf 'vendored consumer and provenance verification passed\n'

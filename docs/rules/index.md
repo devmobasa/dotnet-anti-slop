@@ -19,6 +19,7 @@ a policy starting point, not a substitute for codebase-specific risk decisions.
 | [DAS1012](DAS1012.md) | Concurrency | Bound asynchronous fan-out | warning | medium |
 | [DAS1013](DAS1013.md) | Async | Run TaskCompletionSource continuations asynchronously | warning | high |
 | [DAS1014](DAS1014.md) | Async | Do not convert async lambdas to void-returning delegates | error | high |
+| [DAS1015](DAS1015.md) | Reliability | Do not silently swallow exceptions | warning | high |
 | [DAS2001](DAS2001.md) | ASP.NET Core | Do not build a nested service provider | error | high |
 | [DAS2002](DAS2002.md) | Dependency Injection | Do not register DbContext as a singleton | error | high |
 | [DAS2003](DAS2003.md) | Dependency Injection | Do not capture a scoped dependency in a singleton | error | medium |
@@ -27,6 +28,8 @@ a policy starting point, not a substitute for codebase-specific risk decisions.
 | [DAS2006](DAS2006.md) | ASP.NET Core | Guard development-only middleware | warning | medium |
 | [DAS2007](DAS2007.md) | ASP.NET Core | Do not fire-and-forget request work | error | high |
 | [DAS2008](DAS2008.md) | ASP.NET Core | Do not cache IHttpContextAccessor.HttpContext | warning | high |
+| [DAS2009](DAS2009.md) | Configuration | Validate bound options at startup | warning | medium |
+| [DAS2010](DAS2010.md) | Blazor | Observe EventCallback.InvokeAsync tasks | warning | high |
 | [DAS3001](DAS3001.md) | EF Core | Use no-tracking for read-only entity queries | warning | medium |
 | [DAS3002](DAS3002.md) | EF Core | Do not re-enable tracking on a read-only query | warning | high |
 | [DAS3003](DAS3003.md) | EF Core | Pass CancellationToken to EF Core async queries | warning | high |

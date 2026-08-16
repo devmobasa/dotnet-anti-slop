@@ -33,3 +33,12 @@ public TaskCompletionSource<int> CreateSignal() =>
 
 public Func<Task> CreateCallback() =>
     async () => await RefreshCoreAsync();
+
+public void IgnoreExpectedCancellation()
+{
+    try { Save(); }
+    catch (OperationCanceledException)
+    {
+        // Expected after the caller cancels this best-effort refresh.
+    }
+}

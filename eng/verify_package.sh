@@ -83,13 +83,14 @@ actual_sdk=$(cd "$consumer" && dotnet --version)
 [[ $actual_sdk == "$expected_sdk" ]] || fail "consumer selected SDK $actual_sdk; repository selected $expected_sdk"
 
 cat >"$consumer/Consumer.csproj" <<EOF
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <RestorePackagesPath>\$(MSBuildThisFileDirectory).packages</RestorePackagesPath>
   </PropertyGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="DotNetAntiSlop.Analyzers" Version="$version" />
   </ItemGroup>
 </Project>
@@ -151,5 +152,114 @@ public static class Consumer
 EOF
 run_capture false "$consumer" "$temporary_root/invalid.log" dotnet build Consumer.csproj --no-restore --no-incremental -warnaserror:DAS1001
 grep -Fq DAS1001 "$temporary_root/invalid.log" || fail 'invalid package consumer did not report DAS1001'
+
+cat >"$consumer/Consumer.cs" <<'EOF'
+using Microsoft.Extensions.DependencyInjection;
+
+public sealed class Settings { }
+
+public static class Consumer
+{
+    public static void Configure(IServiceCollection services)
+    {
+        var options = services.AddOptionsWithValidateOnStart<Settings>();
+        options.BindConfiguration("Settings");
+    }
+}
+EOF
+run_capture true "$consumer" "$temporary_root/prevalidated-options.log" dotnet build Consumer.csproj --no-restore --no-incremental -warnaserror:DAS2009
+assert_warning_free "$temporary_root/prevalidated-options.log" 'prevalidated package options consumer'
+
+cat >"$consumer/Consumer.cs" <<'EOF'
+using Microsoft.Extensions.DependencyInjection;
+
+public sealed class Settings { }
+
+public static class Consumer
+{
+    public static void Configure(IServiceCollection services, bool validate)
+    {
+        var options = services.AddOptions<Settings>().BindConfiguration("Settings");
+        if (validate)
+        {
+            options.ValidateOnStart();
+        }
+    }
+}
+EOF
+run_capture false "$consumer" "$temporary_root/conditional-options.log" dotnet build Consumer.csproj --no-restore --no-incremental -warnaserror:DAS2009
+grep -Fq DAS2009 "$temporary_root/conditional-options.log" || fail 'conditional package options consumer did not report DAS2009'
+
+cat >"$consumer/Consumer.cs" <<'EOF'
+using Microsoft.Extensions.DependencyInjection;
+
+public sealed class Settings { }
+
+public static class Consumer
+{
+    public static void Configure(IServiceCollection services)
+    {
+        services.AddOptions<Settings>("A").BindConfiguration("A");
+        services.AddOptions<Settings>("B").ValidateOnStart();
+    }
+}
+EOF
+run_capture false "$consumer" "$temporary_root/named-options.log" dotnet build Consumer.csproj --no-restore --no-incremental -warnaserror:DAS2009
+grep -Fq DAS2009 "$temporary_root/named-options.log" || fail 'separate named package options builders did not report DAS2009'
+
+cat >"$consumer/Consumer.cs" <<'EOF'
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+
+public sealed class Settings { }
+
+internal static class Consumer
+{
+    internal static void Configure(WebApplicationBuilder builder)
+    {
+        builder.Services.AddOptions<Settings>("A").BindConfiguration("A");
+        builder.Services.AddOptions<Settings>("A").ValidateOnStart();
+    }
+}
+EOF
+run_capture true "$consumer" "$temporary_root/stable-options-property.log" dotnet build Consumer.csproj --no-restore --no-incremental -warnaserror:DAS2009
+assert_warning_free "$temporary_root/stable-options-property.log" 'stable property package options consumer'
+
+rm -- "$consumer/Consumer.cs"
+cat >"$consumer/CallbackComponent.razor" <<'EOF'
+@using Microsoft.AspNetCore.Components
+
+@code {
+    [Parameter]
+    public EventCallback Changed { get; set; }
+
+    private void Notify()
+    {
+        Changed.InvokeAsync();
+    }
+}
+EOF
+run_capture false "$consumer" "$temporary_root/razor-callback.log" dotnet build Consumer.csproj --no-restore --no-incremental -warnaserror:DAS2010
+if ! grep -Fq DAS2010 "$temporary_root/razor-callback.log"; then
+  command cat -- "$temporary_root/razor-callback.log" >&2
+  fail 'Razor package consumer did not report DAS2010'
+fi
+grep -Fq CallbackComponent.razor "$temporary_root/razor-callback.log" || fail 'Razor package diagnostic was not mapped to component source'
+
+cat >"$consumer/CallbackComponent.razor" <<'EOF'
+@using Microsoft.AspNetCore.Components
+
+@code {
+    [Parameter]
+    public EventCallback Changed { get; set; }
+
+    private async Task NotifyAsync()
+    {
+        await Changed.InvokeAsync();
+    }
+}
+EOF
+run_capture true "$consumer" "$temporary_root/valid-razor-callback.log" dotnet build Consumer.csproj --no-restore --no-incremental -warnaserror:DAS2010
+assert_warning_free "$temporary_root/valid-razor-callback.log" 'valid Razor package consumer'
 
 printf 'package verification passed: %s\n' "$package"

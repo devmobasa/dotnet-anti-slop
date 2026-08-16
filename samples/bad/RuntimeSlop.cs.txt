@@ -28,3 +28,9 @@ public TaskCompletionSource<int> CreateSignal() =>
 
 public Action CreateCallback() =>
     async () => await RefreshCoreAsync(); // DAS1014
+
+public void IgnoreFailure()
+{
+    try { Save(); }
+    catch { } // DAS1015
+}

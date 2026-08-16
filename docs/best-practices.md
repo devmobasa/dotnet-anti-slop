@@ -395,6 +395,25 @@ or arbitrary input into metric dimensions without a cardinality/privacy plan.
 Log once at the layer that can add action. Avoid catching an exception merely
 to log and rethrow when higher middleware already logs it.
 
+Do not use an empty catch as control flow. Catch only exceptions the current
+layer can handle. A deliberately ignored exception should be narrow and carry a
+local explanation of why continuing is safe.
+
+### Configuration validation
+
+Bind configuration into strongly typed options and validate it during startup.
+Use `ValidateOnStart()` after `Bind` or `BindConfiguration`, or use
+`AddOptionsWithValidateOnStart<TOptions>()`, so a bad deployment fails before
+the affected request or job runs.
+
+### Blazor callbacks
+
+Treat the task returned by `EventCallback.InvokeAsync` as part of the component
+operation. Await it from an asynchronous handler, return it directly from a
+task-returning callback, or include it in deliberate task composition. A bare
+call or discard lets rendering and state changes continue before the parent
+callback finishes and hides callback failures.
+
 ## 6. EF Core
 
 ### `DbContext` lifetime and ownership

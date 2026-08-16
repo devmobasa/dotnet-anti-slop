@@ -91,6 +91,12 @@ internal static class RuleDescriptors
         "Use a Task-returning delegate so completion and exceptions remain observable.",
         "Async",
         DiagnosticSeverity.Error);
+    public static readonly DiagnosticDescriptor DAS1015 = Create(
+        DiagnosticIds.DAS1015,
+        "Do not silently swallow exceptions",
+        "Handle, propagate, or document the intentional swallowing of a specific exception.",
+        "Reliability",
+        DiagnosticSeverity.Warning);
     public static readonly DiagnosticDescriptor DAS2001 = Create(
         DiagnosticIds.DAS2001,
         "Do not build a nested service provider",
@@ -138,6 +144,18 @@ internal static class RuleDescriptors
         "Do not cache IHttpContextAccessor.HttpContext",
         "Store IHttpContextAccessor and read its current HttpContext when needed.",
         "ASP.NET Core",
+        DiagnosticSeverity.Warning);
+    public static readonly DiagnosticDescriptor DAS2009 = Create(
+        DiagnosticIds.DAS2009,
+        "Validate bound options at startup",
+        "Call ValidateOnStart after binding options so invalid configuration fails during startup.",
+        "Configuration",
+        DiagnosticSeverity.Warning);
+    public static readonly DiagnosticDescriptor DAS2010 = Create(
+        DiagnosticIds.DAS2010,
+        "Observe EventCallback.InvokeAsync tasks",
+        "Await, return, or otherwise observe the Task returned by EventCallback.InvokeAsync.",
+        "Blazor",
         DiagnosticSeverity.Warning);
     public static readonly DiagnosticDescriptor DAS3001 = Create(
         DiagnosticIds.DAS3001,

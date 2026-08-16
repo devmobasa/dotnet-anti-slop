@@ -32,6 +32,8 @@ analysis.
 - Async delegate analysis uses the resolved delegate return type and exempts a
   direct event subscription. It does not infer event semantics hidden behind a
   custom registration API.
+- Empty-catch analysis checks only whether a handler contains a statement. It
+  does not judge whether that handling is operationally sufficient.
 
 ## ASP.NET Core rules
 
@@ -47,6 +49,16 @@ analysis.
 - HttpContext capture analysis covers direct property reads assigned to fields
   or properties. It deliberately allows local snapshots and does not model
   values passed through helpers or stored indirectly.
+- Options validation analysis covers resolved Microsoft `OptionsBuilder` bind
+calls, local prevalidation provenance, named builder identity, and
+unconditional straight-line validation. Custom wrappers and validation
+delegated to another method require review. Property getters are matched only
+when their receiver identity is locally provable and no intervening assignment
+is found. Method calls are not assumed to return a stable builder, service
+collection, or option name.
+- Event-callback analysis reports only a direct bare statement or discard. It
+  analyzes authored C# and Razor-generated C#, but does not trace a callback
+  task that is stored and dropped later or one hidden behind a custom wrapper.
 
 ## EF Core rules
 

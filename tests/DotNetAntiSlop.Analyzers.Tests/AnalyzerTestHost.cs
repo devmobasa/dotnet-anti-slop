@@ -15,11 +15,21 @@ internal static class AnalyzerTestHost
         ImmutableArray.Create<DiagnosticAnalyzer>(
             new RuntimeAnalyzer(),
             new AspNetCoreAnalyzer(),
+            new BlazorAnalyzer(),
+            new RazorGeneratedBlazorAnalyzer(),
             new EfCoreAnalyzer(),
             new TestingAnalyzer());
 
     internal static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsAsync(
         string source,
+        params DiagnosticAnalyzer[] analyzers)
+    {
+        return await GetDiagnosticsAsync(source, "Test0.cs", analyzers);
+    }
+
+    internal static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsAsync(
+        string source,
+        string sourcePath,
         params DiagnosticAnalyzer[] analyzers)
     {
         var syntaxTrees = new[]
@@ -31,7 +41,7 @@ internal static class AnalyzerTestHost
             CSharpSyntaxTree.ParseText(
                 source,
                 new CSharpParseOptions(LanguageVersion.Preview),
-                path: "Test0.cs")
+                path: sourcePath)
         };
 
         var compilation = CSharpCompilation.Create(
@@ -83,6 +93,41 @@ internal static class AnalyzerTestHost
         string source)
     {
         var diagnostics = await GetDiagnosticsAsync(source);
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Id == id);
+    }
+
+    internal static async Task AssertHasDiagnosticInGeneratedCodeAsync(
+        string id,
+        string source)
+    {
+        var diagnostics = await GetDiagnosticsAsync(
+            "#line 1 \"Component.razor\"" + Environment.NewLine +
+            source + Environment.NewLine +
+            "#line default",
+            "Component.razor.g.cs",
+            new RazorGeneratedBlazorAnalyzer());
+        Assert.Contains(diagnostics, diagnostic => diagnostic.Id == id);
+    }
+
+    internal static async Task AssertNoDiagnosticInRazorAnalyzerGeneratedCodeAsync(
+        string id,
+        string source)
+    {
+        var diagnostics = await GetDiagnosticsAsync(
+            source,
+            "Generated.g.cs",
+            new BlazorAnalyzer(),
+            new RazorGeneratedBlazorAnalyzer());
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Id == id);
+    }
+
+    internal static async Task AssertNoDiagnosticInGeneratedCodeAsync(
+        string id,
+        string source)
+    {
+        var diagnostics = await GetDiagnosticsAsync(
+            source,
+            "Generated.g.cs");
         Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Id == id);
     }
 

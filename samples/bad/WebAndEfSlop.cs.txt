@@ -1,5 +1,11 @@
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddOptions<MailOptions>()
+    .BindConfiguration("Mail"); // DAS2009
+
+void NotifyChanged(EventCallback<int> changed) =>
+    changed.InvokeAsync(42); // DAS2010
+
 builder.Services.AddSingleton<AppDbContext>(); // DAS2002
 var nested = builder.Services.BuildServiceProvider(); // DAS2001
 

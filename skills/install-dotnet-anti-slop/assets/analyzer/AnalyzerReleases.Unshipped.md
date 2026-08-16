@@ -16,6 +16,7 @@ DAS1011 | Async | Error | Consume a ValueTask only once
 DAS1012 | Concurrency | Warning | Bound asynchronous fan-out
 DAS1013 | Async | Warning | Run TaskCompletionSource continuations asynchronously
 DAS1014 | Async | Error | Do not convert async lambdas to void-returning delegates
+DAS1015 | Reliability | Warning | Do not silently swallow exceptions
 DAS2001 | ASP.NET Core | Error | Do not build a nested service provider
 DAS2002 | Dependency Injection | Error | Do not register DbContext as a singleton
 DAS2003 | Dependency Injection | Error | Do not capture a scoped dependency in a singleton
@@ -24,6 +25,8 @@ DAS2005 | HTTP | Warning | Do not construct HttpClient per request
 DAS2006 | ASP.NET Core | Warning | Guard development-only middleware
 DAS2007 | ASP.NET Core | Error | Do not fire-and-forget request work
 DAS2008 | ASP.NET Core | Warning | Do not cache IHttpContextAccessor.HttpContext
+DAS2009 | Configuration | Warning | Validate bound options at startup
+DAS2010 | Blazor | Warning | Observe EventCallback.InvokeAsync tasks
 DAS3001 | EF Core | Warning | Use no-tracking for read-only entity queries
 DAS3002 | EF Core | Warning | Do not re-enable tracking on a read-only query
 DAS3003 | EF Core | Warning | Pass CancellationToken to EF Core async queries

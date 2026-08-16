@@ -200,6 +200,50 @@ namespace Microsoft.Extensions.DependencyInjection
             where TContext : Microsoft.EntityFrameworkCore.DbContext =>
             services;
     }
+
+    public static class OptionsServiceCollectionExtensions
+    {
+        public static Microsoft.Extensions.Options.OptionsBuilder<TOptions> AddOptions<TOptions>(
+            this IServiceCollection services) where TOptions : class => new();
+
+        public static Microsoft.Extensions.Options.OptionsBuilder<TOptions> AddOptions<TOptions>(
+            this IServiceCollection services,
+            string name) where TOptions : class => new();
+
+        public static Microsoft.Extensions.Options.OptionsBuilder<TOptions> AddOptionsWithValidateOnStart<TOptions>(
+            this IServiceCollection services) where TOptions : class => new();
+    }
+
+    public static class OptionsBuilderConfigurationExtensions
+    {
+        public static Microsoft.Extensions.Options.OptionsBuilder<TOptions> Bind<TOptions>(
+            this Microsoft.Extensions.Options.OptionsBuilder<TOptions> builder,
+            Microsoft.Extensions.Configuration.IConfiguration configuration) where TOptions : class => builder;
+
+        public static Microsoft.Extensions.Options.OptionsBuilder<TOptions> BindConfiguration<TOptions>(
+            this Microsoft.Extensions.Options.OptionsBuilder<TOptions> builder,
+            string configSectionPath) where TOptions : class => builder;
+    }
+
+    public static class OptionsBuilderExtensions
+    {
+        public static Microsoft.Extensions.Options.OptionsBuilder<TOptions> Validate<TOptions>(
+            this Microsoft.Extensions.Options.OptionsBuilder<TOptions> builder,
+            Func<TOptions, bool> validation) where TOptions : class => builder;
+
+        public static Microsoft.Extensions.Options.OptionsBuilder<TOptions> ValidateOnStart<TOptions>(
+            this Microsoft.Extensions.Options.OptionsBuilder<TOptions> builder) where TOptions : class => builder;
+    }
+}
+
+namespace Microsoft.Extensions.Configuration
+{
+    public interface IConfiguration { }
+}
+
+namespace Microsoft.Extensions.Options
+{
+    public sealed class OptionsBuilder<TOptions> where TOptions : class { }
 }
 
 namespace Microsoft.Extensions.Hosting
@@ -231,6 +275,19 @@ namespace Microsoft.AspNetCore.Http
     public interface IHttpContextAccessor
     {
         HttpContext? HttpContext { get; set; }
+    }
+}
+
+namespace Microsoft.AspNetCore.Components
+{
+    public readonly struct EventCallback
+    {
+        public Task InvokeAsync(object? argument = null) => Task.CompletedTask;
+    }
+
+    public readonly struct EventCallback<TValue>
+    {
+        public Task InvokeAsync(TValue argument) => Task.CompletedTask;
     }
 }
 

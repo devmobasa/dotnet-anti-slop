@@ -56,7 +56,8 @@ public sealed class RuntimeAnalyzer : DiagnosticAnalyzer
             RuleDescriptors.DAS1011,
             RuleDescriptors.DAS1012,
             RuleDescriptors.DAS1013,
-            RuleDescriptors.DAS1014);
+            RuleDescriptors.DAS1014,
+            RuleDescriptors.DAS1015);
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -95,6 +96,9 @@ public sealed class RuntimeAnalyzer : DiagnosticAnalyzer
             SyntaxKind.ParenthesizedLambdaExpression,
             SyntaxKind.SimpleLambdaExpression,
             SyntaxKind.AnonymousMethodExpression);
+        context.RegisterSyntaxNodeAction(
+            AnalyzeCatchClause,
+            SyntaxKind.CatchClause);
     }
 
     private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
@@ -962,5 +966,52 @@ public sealed class RuntimeAnalyzer : DiagnosticAnalyzer
                semanticModel.GetSymbolInfo(
                    assignment.Left,
                    cancellationToken).Symbol is IEventSymbol;
+    }
+
+    private static void AnalyzeCatchClause(SyntaxNodeAnalysisContext context)
+    {
+        var catchClause = (CatchClauseSyntax)context.Node;
+        if (catchClause.Block.Statements.Count != 0 ||
+            IsDocumentedSpecificException(catchClause, context))
+        {
+            return;
+        }
+
+        context.ReportDiagnostic(Diagnostic.Create(
+            RuleDescriptors.DAS1015,
+            catchClause.CatchKeyword.GetLocation()));
+    }
+
+    private static bool IsDocumentedSpecificException(
+        CatchClauseSyntax catchClause,
+        SyntaxNodeAnalysisContext context)
+    {
+        var exceptionType = catchClause.Declaration == null
+            ? null
+            : context.SemanticModel.GetTypeInfo(
+                catchClause.Declaration.Type,
+                context.CancellationToken).Type;
+        if (exceptionType == null ||
+            AnalyzerUtilities.IsType(exceptionType, "System", "Exception") ||
+            !AnalyzerUtilities.InheritsFrom(exceptionType, "System", "Exception"))
+        {
+            return false;
+        }
+
+        return catchClause.Block.DescendantTrivia(descendIntoTrivia: true)
+            .Any(HasExplanatoryComment);
+    }
+
+    private static bool HasExplanatoryComment(SyntaxTrivia trivia)
+    {
+        var text = trivia.ToString();
+        if (trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))
+        {
+            return text.Substring(2).Trim().Length != 0;
+        }
+
+        return trivia.IsKind(SyntaxKind.MultiLineCommentTrivia) &&
+               text.Length > 4 &&
+               text.Substring(2, text.Length - 4).Trim().Length != 0;
     }
 }

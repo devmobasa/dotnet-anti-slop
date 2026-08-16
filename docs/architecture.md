@@ -18,6 +18,8 @@ The repository therefore separates:
 
 - `RuntimeAnalyzer` owns C#, LINQ, allocation, async, and fan-out rules.
 - `AspNetCoreAnalyzer` owns service registration and request-lifetime rules.
+- `BlazorAnalyzer` owns component callback rules in C# source, while
+  `RazorGeneratedBlazorAnalyzer` is the mapped-Razor-only generated-code pass.
 - `EfCoreAnalyzer` owns query-chain and `DbContext` rules.
 - `TestingAnalyzer` owns test-runner semantics.
 
@@ -25,10 +27,15 @@ All analyzers:
 
 - target `netstandard2.0`;
 - use symbol resolution before framework-specific reporting;
-- disable generated-code analysis;
 - enable concurrent execution;
 - expose stable IDs through `DiagnosticIds`;
 - are configured by `.globalconfig`, not hard-coded project assumptions.
+
+General analyzers, including `BlazorAnalyzer`, disable generated-code analysis.
+`RazorGeneratedBlazorAnalyzer` enables it because authored `.razor` code is
+compiled through generated C#, but reports only at locations mapped back to a
+`.razor` file from a generated `.g.cs` tree. Unmapped source-generator output
+and hand-written `#line` mappings remain outside that generated pass.
 
 ## Semantic boundaries
 

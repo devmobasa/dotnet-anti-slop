@@ -12,16 +12,19 @@ development and CI use the .NET 10 SDK.
 
 ## What it catches
 
-The pre-release analyzer set contains **33 diagnostics**:
+The pre-release analyzer set contains **36 diagnostics**:
 
 - allocation and collection mistakes, including string accumulation in loops,
   avoidable boxing, repeated enumeration, and missing capacity;
 - async and concurrency mistakes, including sync-over-async, `async void`,
   dropped cancellation, inline `TaskCompletionSource` continuations,
-  `ValueTask` double consumption, and unbounded fan-out;
+  `ValueTask` double consumption, unbounded fan-out, and silently swallowed
+  exceptions;
 - ASP.NET Core mistakes, including nested service providers, invalid DI
   lifetimes, per-request `HttpClient`, unguarded development middleware, and
-  captured `HttpContext` values and request fire-and-forget work;
+  captured `HttpContext` values, request fire-and-forget work, and bound options
+  without startup validation;
+- Blazor mistakes, including dropped `EventCallback.InvokeAsync` tasks;
 - EF Core mistakes, including read-only tracked queries, missing cancellation,
   N+1 query loops, client-side shaping, dynamic raw SQL, unbounded endpoint
   materialization, `CountAsync` existence checks, and concurrent use of one
@@ -169,6 +172,7 @@ The repository has three enforcement layers:
 | [DAS1012](docs/rules/DAS1012.md) | Concurrency | Bound asynchronous fan-out | warning |
 | [DAS1013](docs/rules/DAS1013.md) | Async | Run TaskCompletionSource continuations asynchronously | warning |
 | [DAS1014](docs/rules/DAS1014.md) | Async | Do not convert async lambdas to void-returning delegates | error |
+| [DAS1015](docs/rules/DAS1015.md) | Reliability | Do not silently swallow exceptions | warning |
 | [DAS2001](docs/rules/DAS2001.md) | ASP.NET Core | Do not build a nested service provider | error |
 | [DAS2002](docs/rules/DAS2002.md) | Dependency Injection | Do not register DbContext as a singleton | error |
 | [DAS2003](docs/rules/DAS2003.md) | Dependency Injection | Do not capture a scoped dependency in a singleton | error |
@@ -177,6 +181,8 @@ The repository has three enforcement layers:
 | [DAS2006](docs/rules/DAS2006.md) | ASP.NET Core | Guard development-only middleware | warning |
 | [DAS2007](docs/rules/DAS2007.md) | ASP.NET Core | Do not fire-and-forget request work | error |
 | [DAS2008](docs/rules/DAS2008.md) | ASP.NET Core | Do not cache IHttpContextAccessor.HttpContext | warning |
+| [DAS2009](docs/rules/DAS2009.md) | Configuration | Validate bound options at startup | warning |
+| [DAS2010](docs/rules/DAS2010.md) | Blazor | Observe EventCallback.InvokeAsync tasks | warning |
 | [DAS3001](docs/rules/DAS3001.md) | EF Core | Use no-tracking for read-only entity queries | warning |
 | [DAS3002](docs/rules/DAS3002.md) | EF Core | Do not re-enable tracking on a read-only query | warning |
 | [DAS3003](docs/rules/DAS3003.md) | EF Core | Pass CancellationToken to EF Core async queries | warning |

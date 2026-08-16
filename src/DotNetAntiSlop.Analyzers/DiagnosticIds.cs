@@ -16,6 +16,7 @@ internal static class DiagnosticIds
     public const string DAS1012 = "DAS1012";
     public const string DAS1013 = "DAS1013";
     public const string DAS1014 = "DAS1014";
+    public const string DAS1015 = "DAS1015";
     public const string DAS2001 = "DAS2001";
     public const string DAS2002 = "DAS2002";
     public const string DAS2003 = "DAS2003";
@@ -24,6 +25,8 @@ internal static class DiagnosticIds
     public const string DAS2006 = "DAS2006";
     public const string DAS2007 = "DAS2007";
     public const string DAS2008 = "DAS2008";
+    public const string DAS2009 = "DAS2009";
+    public const string DAS2010 = "DAS2010";
     public const string DAS3001 = "DAS3001";
     public const string DAS3002 = "DAS3002";
     public const string DAS3003 = "DAS3003";

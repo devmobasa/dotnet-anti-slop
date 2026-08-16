@@ -16,6 +16,8 @@ person or a tool, unless a narrower repository instruction overrides them.
   genuine event handlers.
 - Await request work. Background work must be queued to a hosted service or
   durable broker and must own its dependency-injection scope.
+- Do not leave catch blocks empty. Handle or propagate failures; when swallowing
+  a specific expected exception is intentional, explain why at the catch site.
 
 ## C# and runtime
 
@@ -45,6 +47,10 @@ person or a tool, unless a narrower repository instruction overrides them.
 - Accept request cancellation in asynchronous endpoints and controller actions.
 - Store `IHttpContextAccessor`, not its `HttpContext`; read the current context
   only when it is needed.
+- Validate strongly typed bound options during startup with `ValidateOnStart`
+  or `AddOptionsWithValidateOnStart`.
+- Await, return, or deliberately compose the task from
+  `EventCallback.InvokeAsync`; do not discard callback completion or failures.
 - Guard development diagnostics and interactive API UI.
 - Bound request body, upload, response, and query sizes. Stream large payloads.
 - Use structured logging templates; do not pre-format expensive messages.

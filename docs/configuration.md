@@ -44,9 +44,12 @@ A baseline should have an owner and removal condition.
 
 ## Generated code
 
-The custom analyzers opt out of generated code. Keep generated files marked by
-the generator and do not suppress diagnostics in hand-written partial members
-that happen to sit beside generated code.
+The general analyzers opt out of generated code. A dedicated Razor pass is the
+narrow exception: it analyzes generated C# only where the location maps back to
+authored `.razor` component code and the syntax tree has a generated `.g.cs`
+path. Unmapped source-generator output remains outside the custom rules; do not
+suppress diagnostics in hand-written partial members merely because they sit
+beside generated code.
 
 ## Treat warnings as errors
 

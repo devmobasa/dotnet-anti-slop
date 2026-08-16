@@ -18,6 +18,7 @@ platform guidance evolves.
 - [Cancellation in managed threads](https://learn.microsoft.com/dotnet/standard/threading/cancellation-in-managed-threads)
 - [StringBuilder performance guidance](https://learn.microsoft.com/troubleshoot/developer/visualstudio/csharp/language-compilers/string-concatenation)
 - [Best practices for exceptions](https://learn.microsoft.com/dotnet/standard/exceptions/best-practices-for-exceptions)
+- [Options pattern and startup validation](https://learn.microsoft.com/dotnet/core/extensions/options)
 - [Native memory diagnostics and GC tools](https://learn.microsoft.com/dotnet/core/diagnostics/)
 - [.NET 11 what's new](https://learn.microsoft.com/dotnet/core/whats-new/dotnet-11/overview)
 - [Roslyn analyzer overview](https://learn.microsoft.com/visualstudio/code-quality/roslyn-analyzers-overview)
@@ -34,6 +35,7 @@ platform guidance evolves.
 - [Output caching](https://learn.microsoft.com/aspnet/core/performance/caching/output)
 - [ASP.NET Core logging](https://learn.microsoft.com/aspnet/core/fundamentals/logging/)
 - [Minimal APIs overview](https://learn.microsoft.com/aspnet/core/fundamentals/minimal-apis/overview)
+- [Blazor event handling](https://learn.microsoft.com/aspnet/core/blazor/components/event-handling)
 
 ## EF Core
 
